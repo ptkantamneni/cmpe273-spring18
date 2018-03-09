@@ -14,7 +14,7 @@ sock1.bind("tcp://127.0.0.1:5677")
 mess = ""
 prev_mess = ""
 
-def inline():
+def in_thread():
     global mess, prev_mess
     mess = sock1.recv_string()
     sock1.send_string("")
@@ -23,7 +23,7 @@ def inline():
         mess = sock1.recv_string()
         sock1.send_string("")
     
-def out():
+def out_thread():
     global mess, prev_mess
     while True:
         if prev_mess != mess:
@@ -31,8 +31,8 @@ def out():
             sock.send_string(messages[0]+" : "+messages[1])
             prev_mess = mess
 
-thread1 = threading.Thread(target=inline)
-thread2 = threading.Thread(target=out)
+thread1 = threading.Thread(target=in_thread)
+thread2 = threading.Thread(target=out_thread)
 
 thread1.start()
 thread2.start()
