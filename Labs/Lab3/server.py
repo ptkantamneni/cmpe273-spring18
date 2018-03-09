@@ -1,16 +1,41 @@
 import zmq
+import time
+import threading
 
 # ZeroMQ Context
 context = zmq.Context()
 
 # Define the socket using the "Context"
-sock = context.socket(zmq.REP)
-sock.bind("tcp://127.0.0.1:5678")
+sock = context.socket(zmq.PUB)
+sock1 = context.socket(zmq.REP)
+sock.bind("tcp://127.0.0.1:5680")
+sock1.bind("tcp://127.0.0.1:5677")
 
-# Run a simple "Echo" server
-while True:
-    message = sock.recv()
-    message = message.decode()
-    # message = message[::-1]
-    sock.send_string("Echo: " + message)
-print("[Server] Echo: " + message)
+mess = ""
+prev_mess = ""
+
+def inline():
+    global mess, prev_mess
+    mess = sock1.recv_string()
+    sock1.send_string("")
+    prev_mess = mess
+    while True:
+        mess = sock1.recv_string()
+        sock1.send_string("")
+    
+def out():
+    global mess, prev_mess
+    while True:
+        if prev_mess != mess:
+            messages = mess.split(" ",1)
+            sock.send_string(messages[0]+" : "+messages[1])
+            prev_mess = mess
+
+thread1 = threading.Thread(target=inline)
+thread2 = threading.Thread(target=out)
+
+thread1.start()
+thread2.start()
+
+
+
