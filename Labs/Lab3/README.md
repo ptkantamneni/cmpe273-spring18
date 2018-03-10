@@ -15,5 +15,5 @@ python3 server.py
 ### How to run a Chat client
 
 ```sh
-python3 client.py [username]
+python3 client.py username
 ```
