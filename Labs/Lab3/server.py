@@ -16,7 +16,7 @@ try:
         sock1.send_string("")
         messages = mess.split(" ",1)
         try:
-            sock.send_string(messages[0]+" : "+messages[1])
+            sock.send_string("["+messages[0]+"] : "+messages[1])
         except IndexError:
             print("Invalid arguments")
             exit(0)
